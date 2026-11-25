@@ -25,7 +25,9 @@ FORTUNE = (
 OUTPUT_PATH = os.environ.get("ENTRY_OUTPUT", "/output/entry.txt")
 
 # The competition gate: UTF-8 text of 1 to 200 characters, one line,
-# not only white space.
+# not only white space. The gate counts characters, not bytes, so a
+# multi-byte character would cost one against the limit but more on
+# disk; this fortune is plain ASCII, 91 characters and 91 bytes.
 CHAR_LIMIT = 200
 
 
@@ -53,6 +55,8 @@ def save_entry(text, path):
     folder = os.path.dirname(path)
     if folder:
         os.makedirs(folder, exist_ok=True)
+    # newline="" keeps the write byte-exact: no platform newline
+    # translation may touch the entry the judge reads.
     with open(path, "w", encoding="utf-8", newline="") as handle:
         handle.write(text)
     with open(path, "r", encoding="utf-8") as handle:
